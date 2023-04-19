@@ -1,0 +1,15 @@
+server:
+  port: 9998
+
+spring:
+  datasource:
+    username: root
+    password: 315400sxl
+    url: jdbc:mysql:///ruiji
+  redis:
+    port: 6379
+    host: localhost
+
+logging:
+  level:
+    com.halo: debug
