@@ -4,12 +4,14 @@ import com.halo.common.vo.Result;
 import com.halo.customer.entity.Video;
 import com.halo.customer.service.IVideoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import com.halo.util.ImageUtil;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -93,5 +95,25 @@ public class VideoController {
             return Result.success("删除成功");
         }
         return Result.fail("删除失败");
+    }
+
+    @PostMapping("/upload")
+    public Result<?> upload(MultipartFile file, String title, String author) throws IOException {
+        String filename = file.getOriginalFilename();
+        String mp4Path = "/video/mp4/" + filename;
+        String path = "D:\\VueProject\\online-video-website-master\\public\\video\\mp4";
+        String imgFileName = filename.split("\\.")[0] + ".jpg";
+        String imgPath = "/video/img/" + imgFileName;
+        String absoluteMp4Path = "D:\\VueProject\\online-video-website-master\\public\\video\\mp4\\" + filename;
+        String absoluteImgPath = "D:\\VueProject\\online-video-website-master\\public\\video\\img\\" + imgFileName;
+        try {
+            File file1 = new File(path + "/" + filename);
+            file.transferTo(file1);
+            ImageUtil.videoImage(absoluteMp4Path,absoluteImgPath);
+            videoService.uploadVideo(author, title, mp4Path, imgPath);
+            return Result.success("上传成功");
+        }catch (IOException e){
+            return Result.fail("上传失败");
+        }
     }
 }

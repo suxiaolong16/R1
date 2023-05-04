@@ -19,4 +19,6 @@ public interface IMeetingService extends IService<Meeting> {
     HashMap<String, String[]> getSummary(Integer videoId);
 
     Integer addSummary(Summary summary);
+
+    Integer deleteSummary(String type, String time, String context, String videoId);
 }

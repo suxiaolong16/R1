@@ -16,4 +16,6 @@ import java.util.List;
 public interface ITextService extends IService<Text> {
 
     List<Text> getText(Integer videoId);
+
+    Boolean modifyCommentNum(Integer videoId, Integer paraId, String type);
 }

@@ -21,7 +21,7 @@ public class CodeGenerator {
                             .pathInfo(Collections.singletonMap(OutputFile.xml, "C:\\Users\\86155\\IdeaProjects\\R1\\src\\main\\resources\\mapper\\customer")); // 设置mapperXml生成路径
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("r_text") // 设置需要生成的表名
+                    builder.addInclude("r_comment") // 设置需要生成的表名
                             .addTablePrefix("r_"); // 设置过滤表前缀
                 })
                 .templateEngine(new FreemarkerTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板

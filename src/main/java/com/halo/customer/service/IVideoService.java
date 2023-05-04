@@ -28,4 +28,6 @@ public interface IVideoService extends IService<Video> {
     Integer recover(Integer id);
 
     Integer deleteForever(Integer id);
+
+    void uploadVideo(String author, String title, String mp4Path, String imgPath);
 }

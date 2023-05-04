@@ -45,4 +45,13 @@ public class MeetingController {
         }
         return Result.fail("添加失败");
     }
+
+    @GetMapping("/deleteSummary")
+    public Result<?> deleteSummary(String type, String time, String context, String videoId){
+        Integer num = meetingService.deleteSummary(type, time, context, videoId);
+        if(num == 1){
+            return Result.success("删除成功");
+        }
+        return Result.fail("删除失败");
+    }
 }

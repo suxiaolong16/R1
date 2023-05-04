@@ -128,7 +128,62 @@ public class MeetingServiceImpl extends ServiceImpl<MeetingMapper, Meeting> impl
             meeting.setUrl(url);
             this.baseMapper.updateById(meeting);
         }
-
         return 1;
+    }
+
+    @Override
+    public Integer deleteSummary(String type, String time, String context, String videoId) {
+        HashMap<String,Object> queryMap = new HashMap<>();
+        queryMap.put("video_id",videoId);
+        List<Meeting> meetings = this.baseMapper.selectByMap(queryMap);
+        if(meetings.isEmpty()){
+            return 0;
+        }
+        Meeting meeting = meetings.get(0);
+        String deleted = time + "$" + context;
+        if(type.equals("agenda")){
+            String agenda = meeting.getAgenda();
+            agenda = handleString(agenda,deleted);
+            meeting.setAgenda(agenda);
+        }else if(type.equals("discussion")){
+            String discussion = meeting.getDiscussion();
+            discussion = handleString(discussion,deleted);
+            meeting.setDiscussion(discussion);
+        }else if(type.equals("conclusion")){
+            String conclusion = meeting.getConclusion();
+            conclusion = handleString(conclusion,deleted);
+            meeting.setConclusion(conclusion);
+        }else if(type.equals("next")){
+            String next = meeting.getNext();
+            next = handleString(next,deleted);
+            meeting.setNext(next);
+        }else{
+            String url = meeting.getUrl();
+            url = handleString(url,deleted);
+            meeting.setUrl(url);
+        }
+        this.baseMapper.updateById(meeting);
+        return 1;
+    }
+
+    public String handleString(String string, String deleted){
+        String[] array = string.split("/");
+        if(array.length == 1){
+            string = "";
+        }else{
+            for (int i = 0; i < array.length - 1; i++) {
+                if(array[i].equals(deleted)){
+                    for(int j = i; j < array.length - 1; j++){
+                        array[j] = array[j+1];
+                    }
+                    break;
+                }
+            }
+            string = array[0];
+            for(int i = 1; i < array.length - 1; i++){
+                string += ("/" + array[i]);
+            }
+        }
+        return string;
     }
 }

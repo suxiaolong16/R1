@@ -37,4 +37,13 @@ public class TextController {
         }
         return Result.success(textList,"查询文字记录成功");
     }
+
+    @GetMapping("/modifyCommentNum")
+    public Result<?> modifyCommentNum(Integer videoId, Integer paraId, String type){
+        Boolean flag = textService.modifyCommentNum(videoId,paraId,type);
+        if(flag){
+            return Result.success("修改评论数量成功");
+        }
+        return Result.fail("修改评论数量失败");
+    }
 }

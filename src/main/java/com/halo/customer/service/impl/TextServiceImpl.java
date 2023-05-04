@@ -28,4 +28,23 @@ public class TextServiceImpl extends ServiceImpl<TextMapper, Text> implements IT
         List<Text> textList = this.baseMapper.selectByMap(map);
         return textList;
     }
+
+    @Override
+    public Boolean modifyCommentNum(Integer videoId, Integer paraId, String type) {
+        HashMap<String, Object> queryMap = new HashMap<>();
+        queryMap.put("video_id",videoId);
+        queryMap.put("para_id",paraId);
+        List<Text> textList = this.baseMapper.selectByMap(queryMap);
+        Text text = textList.get(0);
+        Integer commentNum = text.getCommentNum();
+        if(type.equals("add")){
+            commentNum++;
+        }
+        if(type.equals("delete")){
+            commentNum--;
+        }
+        text.setCommentNum(commentNum);
+        boolean flag = this.updateById(text);
+        return flag;
+    }
 }
