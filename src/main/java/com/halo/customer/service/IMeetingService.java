@@ -2,7 +2,7 @@ package com.halo.customer.service;
 
 import com.halo.customer.entity.Meeting;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.halo.customer.entity.Summary;
+import com.halo.common.vo.Summary;
 
 import java.util.HashMap;
 

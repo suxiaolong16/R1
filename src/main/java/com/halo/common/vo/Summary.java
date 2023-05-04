@@ -1,4 +1,4 @@
-package com.halo.customer.entity;
+package com.halo.common.vo;
 
 import lombok.Data;
 

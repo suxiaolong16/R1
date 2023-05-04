@@ -1,12 +1,11 @@
 package com.halo.customer.service.impl;
 
 import com.halo.customer.entity.Meeting;
-import com.halo.customer.entity.Summary;
+import com.halo.common.vo.Summary;
 import com.halo.customer.mapper.MeetingMapper;
 import com.halo.customer.service.IMeetingService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
-import sun.nio.cs.ext.MS874;
 
 import java.util.HashMap;
 import java.util.List;

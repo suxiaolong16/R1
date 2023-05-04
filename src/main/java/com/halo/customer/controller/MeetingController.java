@@ -1,12 +1,10 @@
 package com.halo.customer.controller;
 
 import com.halo.common.vo.Result;
-import com.halo.customer.entity.Summary;
+import com.halo.common.vo.Summary;
 import com.halo.customer.service.IMeetingService;
-import com.halo.customer.service.IVideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.stereotype.Controller;
 
 import java.util.HashMap;
 
