@@ -4,6 +4,7 @@ import com.halo.common.vo.Result;
 import com.halo.customer.entity.User;
 import com.halo.customer.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.stereotype.Controller;
 
@@ -28,6 +29,9 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PostMapping("/login")
     public Result<String> login(@RequestBody User user){
         String data = userService.login(user);
@@ -40,8 +44,12 @@ public class UserController {
 
     @PostMapping("/register")
     public Result<?> register(@RequestBody User user){
-        userService.save(user);
-        return Result.success("注册成功");
+        user.setPassword(passwordEncoder.encode(user.getPassword()));  //对密码加密，并做加盐处理
+        Boolean flag = userService.register(user);
+        if(flag == true) {
+            return Result.success("注册成功");
+        }
+        return Result.fail("注册失败");
     }
 
     @GetMapping("/getUserInfo")
@@ -51,6 +59,12 @@ public class UserController {
             return Result.success(username,"用户名获取成功");
         }
         return Result.fail("用户名获取失败");
+    }
+
+    @GetMapping("/logout")
+    public Result<?> logout(String token){
+        userService.logout(token);
+        return Result.success("退出登录成功");
     }
 
 }

@@ -1,15 +1,18 @@
 package com.halo.customer.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.halo.customer.entity.Meeting;
 import com.halo.customer.entity.User;
 import com.halo.customer.mapper.UserMapper;
 import com.halo.customer.service.IUserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -28,25 +31,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public String login(User user) {
         //根据用户名和密码查询
-        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(User::getUsername,user.getUsername());
-        wrapper.eq(User::getPassword,user.getPassword());
-        User loginUser = this.baseMapper.selectOne(wrapper);
+        HashMap<String,Object> queryMap = new HashMap<>();
+        queryMap.put("username",user.getUsername());
+        List<User> users = this.baseMapper.selectByMap(queryMap);
+        User loginUser = users.get(0);
         //结果不为空，则生成token，并将用户信息存入redis
-        if(loginUser != null){
+        if(loginUser != null && passwordEncoder.matches(user.getPassword(),loginUser.getPassword())){
             String key = "token:" + UUID.randomUUID();
 
             //存入redis
             loginUser.setPassword(null);
-            redisTemplate.opsForValue().set(key,loginUser,30, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set(key,loginUser,5, TimeUnit.HOURS);
 
             //返回数据
-            String data = key;
-
-            return data;
+            return key;
         }
         return null;
     }
@@ -57,5 +61,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         User user = ((User) loginUser);
         String username = user.getUsername();
         return username;
+    }
+
+    @Override
+    public void logout(String token) {
+        redisTemplate.delete(token);
+    }
+
+    @Override
+    public Boolean register(User user) {
+        HashMap<String,Object> queryMap = new HashMap<>();
+        queryMap.put("username",user.getUsername());
+        List<User> users = this.baseMapper.selectByMap(queryMap);
+        if(users.isEmpty()){
+            save(user);
+            return true;
+        }
+        return false;
     }
 }
