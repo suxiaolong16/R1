@@ -38,7 +38,7 @@ public class UserController {
         if(data != null){
             return Result.success(data,"登录成功");
         }
-        return Result.fail(20002,"用户名或密码错误");
+        return Result.fail(20002,"登录失败");
 
     }
 
@@ -67,4 +67,19 @@ public class UserController {
         return Result.success("退出登录成功");
     }
 
+    @GetMapping("/getPersonal")
+    public Result<?> getPersonal(String username){
+        User user = userService.getPersonal(username);
+        if(user == null){
+            return Result.fail("个人信息获取失败");
+        }
+        return Result.success(user,"个人信息获取成功");
+    }
+
+    @PostMapping("/updatePersonal")
+    public Result<?> updatePersonal(@RequestBody User user){
+        System.out.println(user.getUsername());
+       userService.updatePersonal(user);
+       return Result.success("修改用户信息成功");
+    }
 }

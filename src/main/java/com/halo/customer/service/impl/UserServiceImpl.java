@@ -42,7 +42,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         List<User> users = this.baseMapper.selectByMap(queryMap);
         User loginUser = users.get(0);
         //结果不为空，则生成token，并将用户信息存入redis
-        if(loginUser != null && passwordEncoder.matches(user.getPassword(),loginUser.getPassword())){
+        if(loginUser != null && passwordEncoder.matches(user.getPassword(),loginUser.getPassword()) && user.getType() == loginUser.getType()){
             String key = "token:" + UUID.randomUUID();
 
             //存入redis
@@ -78,5 +78,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             return true;
         }
         return false;
+    }
+
+    @Override
+    public User getPersonal(String username) {
+        HashMap<String,Object> queryMap = new HashMap<>();
+        queryMap.put("username",username);
+        List<User> users = this.baseMapper.selectByMap(queryMap);
+        User user = users.get(0);
+        user.setPassword(null);
+        return user;
+    }
+
+    @Override
+    public void updatePersonal(User user) {
+        HashMap<String,Object> queryMap = new HashMap<>();
+        queryMap.put("username",user.getUsername());
+        List<User> users = this.baseMapper.selectByMap(queryMap);
+        User resultUser = users.get(0);
+        resultUser.setGender(user.getGender());
+        resultUser.setEmail(user.getEmail());
+        resultUser.setAddress(user.getAddress());
+        resultUser.setSignature(user.getSignature());
+        this.baseMapper.updateById(resultUser);
     }
 }

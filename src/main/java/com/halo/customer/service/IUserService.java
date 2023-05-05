@@ -23,4 +23,7 @@ public interface IUserService extends IService<User> {
 
     Boolean register(User user);
 
+    User getPersonal(String username);
+
+    void updatePersonal(User user);
 }

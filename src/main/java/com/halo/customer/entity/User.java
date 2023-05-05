@@ -3,6 +3,8 @@ package com.halo.customer.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
 import java.io.Serializable;
 
 /**
@@ -13,6 +15,7 @@ import java.io.Serializable;
  * @author halo
  * @since 2023-03-28
  */
+@Data
 @TableName("r_user")
 public class User implements Serializable {
 
@@ -25,34 +28,14 @@ public class User implements Serializable {
 
     private String password;
 
-    public Integer getId() {
-        return id;
-    }
+    private String gender;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-    public String getUsername() {
-        return username;
-    }
+    private String email;
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    public String getPassword() {
-        return password;
-    }
+    private String address;
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    private String signature;
 
-    @Override
-    public String toString() {
-        return "User{" +
-            "id=" + id +
-            ", username=" + username +
-            ", password=" + password +
-        "}";
-    }
+    private Integer type;
 }
+
