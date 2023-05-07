@@ -37,5 +37,9 @@ public class User implements Serializable {
     private String signature;
 
     private Integer type;
+
+    private Integer state;
+
+    private Integer accepted;
 }
 

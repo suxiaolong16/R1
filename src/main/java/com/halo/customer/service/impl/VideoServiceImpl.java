@@ -129,7 +129,30 @@ public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video> implements
         video.setMp4path(mp4Path);
         video.setImgpath(imgPath);
         video.setRecycled(0);
+        video.setBanned(0);
         this.baseMapper.insert(video);
+    }
+
+    @Override
+    public List<Video> getAllVideoByAdmin() {
+        List<Video> videoList = this.baseMapper.selectList(null);
+        return videoList;
+    }
+
+    @Override
+    public Integer banVideo(Integer id) {
+        Video video = this.baseMapper.selectById(id);
+        video.setBanned(1);
+        Integer num = this.baseMapper.updateById(video);
+        return num;
+    }
+
+    @Override
+    public Integer liftVideo(Integer id) {
+        Video video = this.baseMapper.selectById(id);
+        video.setBanned(0);
+        Integer num = this.baseMapper.updateById(video);
+        return num;
     }
 
     @Scheduled(cron = "0 0 20 * * ?") // 每天晚上8点执行

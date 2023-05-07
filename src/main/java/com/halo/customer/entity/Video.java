@@ -40,5 +40,5 @@ public class Video implements Serializable {
 
     private LocalDateTime recycledTime;
 
-
+    private Integer banned;
 }

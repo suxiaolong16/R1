@@ -11,10 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -35,24 +32,45 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public String login(User user) {
+    public HashMap<String, Object> login(User user) {
         //根据用户名和密码查询
-        HashMap<String,Object> queryMap = new HashMap<>();
-        queryMap.put("username",user.getUsername());
+        HashMap<String, Object> resultMap = new HashMap<>();
+        HashMap<String, Object> queryMap = new HashMap<>();
+        queryMap.put("username", user.getUsername());
         List<User> users = this.baseMapper.selectByMap(queryMap);
+        if (users.isEmpty()) {
+            resultMap.put("flag", 1);
+            return resultMap;
+        }
         User loginUser = users.get(0);
         //结果不为空，则生成token，并将用户信息存入redis
-        if(loginUser != null && passwordEncoder.matches(user.getPassword(),loginUser.getPassword()) && user.getType() == loginUser.getType()){
+        if (passwordEncoder.matches(user.getPassword(), loginUser.getPassword()) && user.getType() == loginUser.getType()
+                && loginUser.getState() == 0 && loginUser.getAccepted() == 1) {
             String key = "token:" + UUID.randomUUID();
 
             //存入redis
             loginUser.setPassword(null);
-            redisTemplate.opsForValue().set(key,loginUser,5, TimeUnit.HOURS);
+            redisTemplate.opsForValue().set(key, loginUser, 5, TimeUnit.HOURS);
 
+            resultMap.put("key", key);
+            resultMap.put("flag", 0);
             //返回数据
-            return key;
+            return resultMap;
         }
-        return null;
+        if (loginUser.getAccepted() == 0) {
+            resultMap.put("flag", 5);
+            return resultMap;
+        }
+        if (loginUser.getState() == 1){
+            resultMap.put("flag", 4);
+            return resultMap;
+        }
+        if (!passwordEncoder.matches(user.getPassword(), loginUser.getPassword())) {
+            resultMap.put("flag", 2);
+            return resultMap;
+        }
+            resultMap.put("flag", 3);
+            return resultMap;
     }
 
     @Override
@@ -101,5 +119,62 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         resultUser.setAddress(user.getAddress());
         resultUser.setSignature(user.getSignature());
         this.baseMapper.updateById(resultUser);
+    }
+
+    @Override
+    public List<User> getAllUser() {
+        HashMap<String,Object> queryMap = new HashMap<>();
+        queryMap.put("type",1);
+        queryMap.put("accepted",1);
+        List<User> userList = this.baseMapper.selectByMap(queryMap);
+        return userList;
+    }
+
+    @Override
+    public List<User> getAllRegisteringUser() {
+        HashMap<String,Object> queryMap = new HashMap<>();
+        queryMap.put("accepted",0);
+        List<User> userList = this.baseMapper.selectByMap(queryMap);
+        return userList;
+    }
+
+    @Override
+    public Integer freezeUser(Integer id) {
+        User user = this.baseMapper.selectById(id);
+        user.setState(1);
+        Integer num = this.baseMapper.updateById(user);
+        return num;
+    }
+
+    @Override
+    public Integer unfreezeUser(Integer id) {
+        User user = this.baseMapper.selectById(id);
+        user.setState(0);
+        Integer num = this.baseMapper.updateById(user);
+        return num;
+    }
+
+    @Override
+    public Integer acceptUser(Integer id) {
+        User user = this.baseMapper.selectById(id);
+        user.setAccepted(1);
+        Integer num = this.baseMapper.updateById(user);
+        return num;
+    }
+
+    @Override
+    public Integer rejectUser(Integer id) {
+        Integer num = this.baseMapper.deleteById(id);
+        return num;
+    }
+
+    @Override
+    public Integer destroyUser(String username) {
+        HashMap<String,Object> queryMap = new HashMap<>();
+        queryMap.put("username",username);
+        List<User> userList = this.baseMapper.selectByMap(queryMap);
+        User user = userList.get(0);
+        Integer num = this.baseMapper.deleteById(user);
+        return num;
     }
 }

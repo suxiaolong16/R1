@@ -30,4 +30,10 @@ public interface IVideoService extends IService<Video> {
     Integer deleteForever(Integer id);
 
     void uploadVideo(String author, String title, String mp4Path, String imgPath);
+
+    List<Video> getAllVideoByAdmin();
+
+    Integer banVideo(Integer id);
+
+    Integer liftVideo(Integer id);
 }

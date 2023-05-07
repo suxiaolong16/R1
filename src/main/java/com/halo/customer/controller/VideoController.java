@@ -97,15 +97,16 @@ public class VideoController {
         return Result.fail("删除失败");
     }
 
+    //一定要注意这个函数中文件的路径，改动路径可能会上传失败
     @PostMapping("/upload")
     public Result<?> upload(MultipartFile file, String title, String author) throws IOException {
         String filename = file.getOriginalFilename();
         String mp4Path = "/video/mp4/" + filename;
-        String path = "D:\\VueProject\\online-video-website-master\\public\\video\\mp4";
+        String path = "D:\\VueProject\\R2\\public\\video\\mp4";
         String imgFileName = filename.split("\\.")[0] + ".jpg";
         String imgPath = "/video/img/" + imgFileName;
-        String absoluteMp4Path = "D:\\VueProject\\online-video-website-master\\public\\video\\mp4\\" + filename;
-        String absoluteImgPath = "D:\\VueProject\\online-video-website-master\\public\\video\\img\\" + imgFileName;
+        String absoluteMp4Path = "D:\\VueProject\\R2\\public\\video\\mp4\\" + filename;
+        String absoluteImgPath = "D:\\VueProject\\R2\\public\\video\\img\\" + imgFileName;
         try {
             File file1 = new File(path + "/" + filename);
             file.transferTo(file1);
@@ -115,5 +116,33 @@ public class VideoController {
         }catch (IOException e){
             return Result.fail("上传失败");
         }
+    }
+
+    @GetMapping("/getAllVideoByAdmin")
+    public Result<?> getAllVideoByAdmin(){
+        List<Video> videoList = videoService.getAllVideoByAdmin();
+        if(videoList.isEmpty()){
+            return Result.fail("未查到视频信息");
+        }else{
+            return Result.success(videoList,"查询成功");
+        }
+    }
+
+    @GetMapping("/banVideo")
+    public Result<?> banVideo(Integer id){
+        Integer num = videoService.banVideo(id);
+        if(num == 1){
+            return Result.success("暂时封禁成功");
+        }
+        return Result.fail("暂时封禁失败");
+    }
+
+    @GetMapping("/liftVideo")
+    public Result<?> liftVideo(Integer id){
+        Integer num = videoService.liftVideo(id);
+        if(num == 1){
+            return Result.success("解禁成功");
+        }
+        return Result.fail("解禁失败");
     }
 }
