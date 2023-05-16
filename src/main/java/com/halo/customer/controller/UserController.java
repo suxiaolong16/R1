@@ -70,6 +70,7 @@ public class UserController {
     public Result<String> getUserInfo(String token){
         String username = userService.getUsername(token);
         if(username != null){
+            System.out.println(username);
             return Result.success(username,"用户名获取成功");
         }
         return Result.fail("用户名获取失败");
@@ -92,7 +93,6 @@ public class UserController {
 
     @PostMapping("/updatePersonal")
     public Result<?> updatePersonal(@RequestBody User user){
-        System.out.println(user.getUsername());
        userService.updatePersonal(user);
        return Result.success("修改用户信息成功");
     }
